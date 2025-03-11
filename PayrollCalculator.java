@@ -1,42 +1,66 @@
 package com.mycompany.motorphpayroll;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.time.format.DateTimeFormatter;
 
 public class PayrollCalculator {
-    private static final double HOURLY_RATE = 100.0; // Set your hourly rate here
-    private static final double SSS_DEDUCTION = 0.045; // 4.5% of gross salary
-    private static final double PHILHEALTH_DEDUCTION = 0.03; // 3% of gross salary
-    private static final double PAGIBIG_DEDUCTION = 0.02; // 2% of gross salary
 
-    public static double computeSalary(String employeeNumber) {
-        String attendanceFile = "C:\\Users\\Papa\\Downloads\\Copy of MotorPH Employee DataHoursWorked - Employee Details.csv";
-        List<Attendance> attendanceList = CSVReaderUtil.readAttendanceFromCSV(attendanceFile);
+    /**
+     * Calculates the total hours worked by an employee.
+     */
+    static double calculateTotalHoursWorked(String empNum, List<Attendance> attendanceRecords, String startDate, String endDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
-        double totalHoursWorked = 0;
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
 
-        // Find total worked hours for the given employee
-        for (Attendance att : attendanceList) {
-            if (att.getEmployeeNumber().equals(employeeNumber)) {
-                totalHoursWorked += att.getTotalWorkedHours();
-            }
+        List<Attendance> filteredRecords = attendanceRecords.stream()
+            .filter(a -> a.getEmployeeNumber().equals(empNum))
+            .filter(a -> {
+                LocalDate attendanceDate = LocalDate.parse(a.getDate(), formatter);
+                return (attendanceDate.isEqual(start) || attendanceDate.isAfter(start)) &&
+                       (attendanceDate.isEqual(end) || attendanceDate.isBefore(end));
+            })
+            .toList();
+
+        if (filteredRecords.isEmpty()) {
+            System.out.println("⚠ No attendance records found for Employee ID: " + empNum + " in the selected period.");
+            return 0.0;
         }
 
-        if (totalHoursWorked == 0) {
-            return -1; // Employee not found
-        }
+        // Calculate total hours within the date range
+        double totalHours = filteredRecords.stream()
+            .mapToDouble(Attendance::getTotalWorkedHours)
+            .sum();
 
-        // Compute gross salary
-        double grossSalary = totalHoursWorked * HOURLY_RATE;
+        System.out.println("✅ Total hours worked for Employee " + empNum + " from " + startDate + " to " + endDate + ": " + totalHours);
+        return totalHours;
+    }
 
-        // Compute deductions
-        double sss = grossSalary * SSS_DEDUCTION;
-        double philHealth = grossSalary * PHILHEALTH_DEDUCTION;
-        double pagIbig = grossSalary * PAGIBIG_DEDUCTION;
-        double totalDeductions = sss + philHealth + pagIbig;
+    public PayrollCalculator(List<Employee> employees, List<Attendance> attendanceRecords) {
+    }
 
-        // Compute net salary
-        double netSalary = grossSalary - totalDeductions;
+    /**
+     * Computes salary for a given employee based on attendance records.
+     */
+    public double computeSalary(Employee employee, double totalHoursWorked) {
+        double dailyWage = employee.getDailyWage();
+        double grossSalary = (totalHoursWorked / 8) * dailyWage; // Gross pay before deductions
+
+        // Deductions (Example Values - Adjust Based on Actual Rules)
+        double sssDeduction = grossSalary * 0.045;   // 4.5% of salary
+        double philhealthDeduction = grossSalary * 0.0275; // 2.75% of salary
+        double pagibigDeduction = Math.min(grossSalary * 0.02, 100); // 2% but max of PHP 100
+
+        double netSalary = grossSalary - (sssDeduction + philhealthDeduction + pagibigDeduction);
+
+        // Print Salary Breakdown
+        System.out.println("💰 Gross Salary: PHP " + grossSalary);
+        System.out.println("📉 Deductions: SSS - " + sssDeduction + ", PhilHealth - " + philhealthDeduction + ", Pag-IBIG - " + pagibigDeduction);
+        System.out.println("✅ Net Salary: PHP " + netSalary);
 
         return netSalary;
     }
-}
+} // ✅ Missing closing bracket added here
