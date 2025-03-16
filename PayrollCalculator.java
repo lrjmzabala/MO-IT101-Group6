@@ -1,5 +1,7 @@
-package com.mycompany.motorphpayroll;
+package com.mycompany.motorphpayroll.util;
 
+import com.mycompany.motorphpayroll.model.Employee;
+import com.mycompany.motorphpayroll.model.Attendance;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +12,7 @@ public class PayrollCalculator {
     /**
      * Calculates the total hours worked by an employee.
      */
-    static double calculateTotalHoursWorked(String empNum, List<Attendance> attendanceRecords, String startDate, String endDate) {
+    public static double calculateTotalHoursWorked(String empNum, List<Attendance> attendanceRecords, String startDate, String endDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
         LocalDate start = LocalDate.parse(startDate, formatter);

@@ -1,4 +1,4 @@
-package com.mycompany.motorphpayroll;
+package com.mycompany.motorphpayroll.model;
 
 import java.time.Duration;
 import java.time.LocalDate;

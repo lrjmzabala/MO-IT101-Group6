@@ -1,4 +1,4 @@
-package com.mycompany.motorphpayroll;
+package com.mycompany.motorphpayroll.model;
 
 public class Employee {
     private final String employeeNumber;

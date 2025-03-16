@@ -1,5 +1,7 @@
-package com.mycompany.motorphpayroll;
+package com.mycompany.motorphpayroll.util;
 
+import com.mycompany.motorphpayroll.model.Employee;
+import com.mycompany.motorphpayroll.model.Attendance;
 import java.io.*;
 import java.util.*;
 import java.io.BufferedReader;
@@ -167,4 +169,23 @@ public class CSVReaderUtil {
 
         return result.toArray(new String[0]);
     }
+    
+    /**
+     * Adds a new employee to the CSV file.
+     */
+    public static void addEmployeeToCSV(Employee employee) {
+        try (FileWriter writer = new FileWriter(EMPLOYEE_CSV, true)) {
+            String newEmployee = String.join(",", employee.getEmployeeNumber(), 
+                                              employee.getFirstName(), 
+                                              employee.getLastName(), 
+                                              "", "", "", "", 
+                                              String.valueOf(employee.getHourlyRate()));
+            writer.append(newEmployee).append("\n");
+            System.out.println("✅ Employee added successfully: " + employee.getFullName());
+        } catch (IOException e) {
+            System.err.println("❌ Error writing to employee file: " + e.getMessage());
+        }
+    }
+    
+    
 }
