@@ -43,29 +43,50 @@ public class PayrollCalculator {
     }
 
     public double computeSalary(Employee employee, double totalHoursWorked) {
-        double dailyWage = employee.getDailyWage();
-        double grossSalary = (totalHoursWorked / 8) * dailyWage;
-
-        double sssDeduction = grossSalary * 0.045;
-        double philhealthDeduction = grossSalary * 0.0275;
-        double pagibigDeduction = Math.min(grossSalary * 0.02, 100);
+    try {
+        double grossSalary = calculateGrossSalary(employee, totalHoursWorked);
+        double totalDeductions = calculateDeductions(grossSalary);
+        double netSalary = grossSalary - totalDeductions;
         
-        lastIncomeTax = computeIncomeTax(grossSalary); // ✅ Store computed tax
-
-        double netSalary = grossSalary - (sssDeduction + philhealthDeduction + pagibigDeduction + lastIncomeTax);
-
-        // Print Salary Breakdown
-        System.out.println("--------------------------------");
-        System.out.printf("💼 Total Hours Worked: %.2f\n", totalHoursWorked);
-        System.out.println("📉 Deductions:");
-        System.out.printf("  - SSS: PHP %.2f\n", sssDeduction);
-        System.out.printf("  - PhilHealth: PHP %.2f\n", philhealthDeduction);
-        System.out.printf("  - Pag-IBIG: PHP %.2f\n", pagibigDeduction);
-        System.out.printf("  - Income Tax: PHP %.2f\n", lastIncomeTax);
-        System.out.println("--------------------------------");
-        System.out.printf("✅ Net Salary: PHP %.2f\n", netSalary);
-
+        printSalaryBreakdown(employee, totalHoursWorked, grossSalary, totalDeductions, netSalary);
         return netSalary;
+    } catch (Exception e) {
+        System.err.println("❌ Error computing salary: " + e.getMessage());
+        return 0.0;
+    }
+}
+
+/**
+ * Calculates gross salary based on hours worked.
+ */
+private double calculateGrossSalary(Employee employee, double totalHoursWorked) {
+    return (totalHoursWorked / 8) * employee.getDailyWage();
+}
+
+/**
+ * Computes all deductions including SSS, PhilHealth, Pag-IBIG, and Income Tax.
+ */
+private double calculateDeductions(double grossSalary) {
+    double sss = grossSalary * 0.045;
+    double philhealth = grossSalary * 0.0275;
+    double pagibig = Math.min(grossSalary * 0.02, 100);
+    lastIncomeTax = computeIncomeTax(grossSalary); // ✅ Store computed tax
+    return sss + philhealth + pagibig + lastIncomeTax;
+}
+
+/**
+ * Prints a detailed salary breakdown.
+ */
+private void printSalaryBreakdown(Employee employee, double totalHoursWorked, double grossSalary, double totalDeductions, double netSalary) {
+    System.out.println("--------------------------------");
+    System.out.printf("💼 Total Hours Worked: %.2f\n", totalHoursWorked);
+    System.out.println("📉 Deductions:");
+    System.out.printf("  - SSS: PHP %.2f\n", grossSalary * 0.045);
+    System.out.printf("  - PhilHealth: PHP %.2f\n", grossSalary * 0.0275);
+    System.out.printf("  - Pag-IBIG: PHP %.2f\n", Math.min(grossSalary * 0.02, 100));
+    System.out.printf("  - Income Tax: PHP %.2f\n", lastIncomeTax);
+    System.out.println("--------------------------------");
+    System.out.printf("✅ Net Salary: PHP %.2f\n", netSalary);
     }
 
     public double getIncomeTax() {

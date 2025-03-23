@@ -17,6 +17,9 @@ public class EmployeePanel extends JPanel {
 
     public EmployeePanel() {
         setLayout(new BorderLayout());
+        
+        // ✅ Load employees when GUI starts
+    CSVReaderUtil.loadEmployeesToCache();
 
         // Input Panel
         JPanel inputPanel = new JPanel();
