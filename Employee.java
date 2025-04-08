@@ -58,8 +58,8 @@ public class Employee extends Person {
     // Overriding toString() method to properly format Employee details
     @Override
     public String toString() {
-        return "Employee Number: " + employeeNumber + "\n" +
-               "Name: " + getFullName() + "\n" +
+        return getRoleDescription() + "\n" +
+               "Employee Number: " + employeeNumber + "\n" +
                "Birthday: " + birthday + "\n" +
                "Address: " + address + "\n" +
                "Phone: " + phoneNumber + "\n" +
@@ -104,4 +104,9 @@ public class Employee extends Person {
     public double getDailyWage() {
         return hourlyRate * 8; // Assuming an 8-hour workday
     }
+    
+    @Override
+    public String getRoleDescription() {
+    return "Employee: " + position;
+}
 }

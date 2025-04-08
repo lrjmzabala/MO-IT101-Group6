@@ -13,7 +13,7 @@ public class AdminPanel extends JPanel {
     private Admin admin;  
 
     public AdminPanel() {
-        admin = new Admin();  
+        Admin admin = new Admin("Admin", "Panel", "000-0000");  
 
         setLayout(new BorderLayout());
 
